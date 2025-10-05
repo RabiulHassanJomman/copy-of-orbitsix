@@ -3,7 +3,7 @@ name: Mirror to Repo B
 on:
   push:
     branches:
-      - main  # or any branch you want to mirror
+      - main  # branch to mirror
 
 jobs:
   mirror:
@@ -12,11 +12,15 @@ jobs:
     steps:
       - name: Checkout Repo A
         uses: actions/checkout@v3
+        with:
+          fetch-depth: 0  # full history
 
-      - name: Push to Repo B
+      - name: Mirror to Repo B
+        env:
+          TOKEN: ${{ secrets.MIRROR_TOKEN }}  # PAT with repo scope
+          REPO_B: "RabiulHassanJomman/copy-of-orbitsix"
         run: |
           git config --global user.name "github-actions"
           git config --global user.email "github-actions@github.com"
-          git remote add mirror https://RabiulHassanJomman:${{ secrets.MIRROR_TOKEN }}@github.com/RabiulHassanJomman/copy-of-orbitsix.git
+          git remote add mirror https://$TOKEN@github.com/$REPO_B.git
           git push --force mirror main
-
